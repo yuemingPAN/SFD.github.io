@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- MathJax for LaTeX rendering -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],    // 行内公式：$ ... $
+      displayMath: [['$$','$$'], ['\\[','\\]']],   // 行间公式：$$ ... $$
+      processEscapes: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  };
+</script>
+<script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="Semantics Lead the Way: Harmonizing Semantic and Texture Modeling with Asynchronous Latent Diffusion">
+  <meta name="description" content="Semantic-First Diffusion (SFD) explicitly prioritizes semantic formation in latent diffusion models by asynchronously denoising semantics and textures, achieving up to 100× faster convergence and state-of-the-art FID.">
+  <meta name="keywords" content="Semantic-First Diffusion, Asynchronous Latent Diffusion, Semantic VAE, Latent Diffusion Model, LDM, DiT, ImageNet, Efficient Generation, Coarse-to-Fine, Computer Vision">
+  <meta name="author" content="Yueming Pan, Ruoyu Feng, Qi Dai, Yuqi Wang, Wenfeng Lin, Mingyu Guo, Chong Luo, Nanning Zheng">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Xi'an Jiaotong University & Microsoft Research Asia">
+  <meta property="og:title" content="Semantics Lead the Way: Harmonizing Semantic and Texture Modeling with Asynchronous Latent Diffusion">
+  <meta property="og:description" content="SFD introduces asynchronous semantic–texture denoising to achieve faster convergence and improved generation fidelity.">
+  <meta property="og:url" content="https://SFD.github.io/">
+  <meta property="og:image" content="https://SFD.github.io/static/images/social_preview.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@SFD_Project">
+  <meta name="twitter:title" content="Semantics Lead the Way: Harmonizing Semantic and Texture Modeling with Asynchronous Latent Diffusion">
+  <meta name="twitter:description" content="SFD introduces asynchronous semantic–texture denoising to achieve faster convergence and improved generation fidelity.">
+  <meta name="twitter:image" content="https://SFD.github.io/static/images/social_preview.png">
+
+  <!-- Academic Metadata -->
+  <meta name="citation_title" content="Semantics Lead the Way: Harmonizing Semantic and Texture Modeling with Asynchronous Latent Diffusion">
+  <meta name="citation_author" content="Pan, Yueming">
+  <meta name="citation_author" content="Feng, Ruoyu">
+  <meta name="citation_author" content="Dai, Qi">
+  <meta name="citation_author" content="Wang, Yuqi">
+  <meta name="citation_author" content="Lin, Wenfeng">
+  <meta name="citation_author" content="Guo, Mingyu">
+  <meta name="citation_author" content="Luo, Chong">
+  <meta name="citation_author" content="Zheng, Nanning">
+  <meta name="citation_publication_date" content="2025">
+  <meta name="citation_conference_title" content="CVPR 2026">
+  <meta name="citation_pdf_url" content="https://arxiv.org/pdf/xxxx.xxxxx.pdf">
+
+  <title>Semantics Lead the Way | SFD Project Page</title>
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Academicons (for arXiv icon) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons/css/academicons.min.css">
+
+</head>
+
+<body>
+
+  <main id="main-content">
+
+  <!-- ===== Hero Section ===== -->
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+
+            <h1 class="publication-title">
+              <span class="title-line">Semantics Lead the Way: Harmonizing Semantic and Texture</span><br> 
+              <span class="title-line">Modeling with Asynchronous Latent Diffusion</span>
+            </h1>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">Yueming Pan<sup>1,2*‡</sup>,</span>
+              <span class="author-block">Ruoyu Feng<sup>3‡</sup>,</span>
+              <span class="author-block">Qi Dai<sup>2</sup>,</span>
+              <span class="author-block">Yuqi Wang<sup>3</sup>,</span>
+              <br>
+              <span class="author-block">Wenfeng Lin<sup>3</sup>,</span>
+              <span class="author-block">Mingyu Guo<sup>3</sup>,</span>
+              <span class="author-block">Chong Luo<sup>2†</sup>,</span>
+              <span class="author-block">Nanning Zheng<sup>1†</sup></span>
+            </div>
+
+            <div class="is-size-5 publication-authors affiliations">
+              <span class="author-block">
+                ¹IAIR, Xi’an Jiaotong University&nbsp;&nbsp;&nbsp;
+                ²Microsoft Research Asia&nbsp;&nbsp;&nbsp;
+                ³ByteDance
+              </span>
+            </div>
+
+            <div class="is-size-6 publication-authors" style="margin-top: 0.5rem;">
+              <small><sup>*</sup>This work is done when Yueming Pan is an intern with MSRA <sup>‡</sup>Equal contribution <sup>†</sup>Corresponding author</small>
+            </div>
+
+            <div class="column has-text-centered" style="margin-top: 0.3rem;">
+              <div class="publication-links" style="text-align:center; margin-top:0;">
+                <a href="https://github.com/YuemingPan/SFD" target="_blank" class="btn-circle">
+                  <i class="fab fa-github"></i>&nbsp; Code
+                </a>
+                <a href="https://arxiv.org/abs/xxxx.xxxxx" target="_blank" class="btn-circle">
+                  <i class="ai ai-arxiv"></i>&nbsp; arXiv
+                </a>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Teaser Figure ===== -->
+  <section class="section hero teaser">
+  <!-- <section class="hero teaser"> -->
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column">
+          <div class="teaser-wrapper has-text-centered">
+            <img src="static/figs/teaser_v5.png"
+                alt="Semantic-First Diffusion teaser"
+                loading="lazy"
+                style="max-width:100%; height:auto; border-radius:8px;">
+          </div>
+
+          <div class="teaser-caption">
+            <p>
+              <strong>(a) Overview of Semantic-First Diffusion (SFD).</strong>
+              Semantics (dashed curve) and textures (solid curve) follow asynchronous denoising trajectories.
+              SFD operates in three phases: 
+              <span style="color:#d62728;">Stage I – Semantic initialization</span>, where semantic latents denoise first;
+              <span style="color:rgb(68,114,196);">Stage II – Asynchronous generation</span>, where semantics and textures denoise jointly but asynchronously, with semantics ahead of textures;
+              <span style="color:#2ca02c;">Stage III – Texture completion</span>, where only textures continue refining.
+              After denoising, the generated semantic latent $\mathbf{s}_1$ is discarded, and the final image is decoded solely from the texture latent $\mathbf{z}_1$.
+              <strong>(b) Training convergence on ImageNet 256$\times$256 without guidance.</strong> 
+              SFD achieves substantially faster convergence than DiT-XL/2 and LightningDiT-XL/1 by approximately <b>100$\times$</b> and <b>33.3$\times$</b>, respectively.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== Abstract ===== -->
+  <section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified abstract-text">
+          <p>
+            Latent Diffusion Models (LDMs) inherently follow a coarse-to-fine generation process, where high-level semantic structure is generated slightly earlier than fine-grained texture. 
+            This indicates the preceding semantics potentially benefit the texture generation by providing a semantic anchor. 
+            Recent advances have integrated semantic priors from pretrained visual encoders to further enhance LDMs, yet they still denoise semantic and VAE-encoded texture synchronously, neglecting such ordering. 
+            Observing these, we propose <strong>Semantic-First Diffusion (SFD)</strong>, a latent diffusion paradigm that explicitly prioritizes semantic formation. SFD first constructs composite latents by combining the compact semantic latent, which is extracted from pretrained visual encoder via a dedicated <strong>Semantic VAE</strong>, with the texture latent. 
+            The core of SFD is to denoise the semantic and texture latents asynchronously using separate noise schedules: semantics precede textures by a temporal offset, providing clearer high-level guidance for texture refinement and enabling natural coarse-to-fine generation. 
+            On ImageNet $256\times256$ with guidance, SFD achieves <strong>FID 1.06</strong> (LightningDiT-XL) and <strong>FID 1.04</strong> (1.0B LightningDiT-XXL), while achieving up to <strong>100</strong>$\times$ faster convergence than original DiT without guidance. SFD also improves existing methods like ReDi and VA-VAE, demonstrating the effectiveness of asynchronous, semantics-led modeling.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Method ===== -->
+<section id="method" class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column">
+        <h2 class="title is-3 has-text-centered">Method</h2>
+
+        <!-- ===== Method Overview ===== -->
+        <div class="content has-text-justified method-text" style="margin-top: 1.2rem;">
+          <p>
+            We propose <strong>Semantic-First Diffusion (SFD)</strong>, which employs asynchronous denoising to harmonize semantic and texture modeling, achieving faster convergence and superior performance without sacrificing reconstruction fidelity.
+          </p>
+
+        </div>
+
+        <!-- ========== 1. Composite Latent Construction ========== -->
+        <h3 class="title is-4" style="margin-top: 2rem;">1. Composite Latent Construction</h3>
+
+        <div class="content has-text-justified method-text">
+          <p>
+            To comprehensively leverage high-level semantics from pretrained vision foundation models,
+            we introduce a dedicated <strong>Semantic VAE (SemVAE)</strong> that compresses rich semantic features
+            into compact latent representations while preserving spatial layout and minimizing information loss.
+            The composite latent is constructed by combining compressed high-level semantics $\mathbf{s}_1$ and low-level textures $\mathbf{z}_1$, 
+            which are encoded via SemVAE encoder $\mathcal{E}_s$ and texture VAE encoder $\mathcal{E}_z$, respectively. 
+            Here we implement SD-VAE as the texture VAE. The two latents are concatenated along the channel dimension.
+          </p>
+
+          <!-- Side-by-side images: SemVAE + Composite Latent -->
+          <div class="columns is-vcentered" style="margin: 1.2rem 0;">
+            <div class="column">
+              <figure class="image" style="max-width:100%; text-align:center;">
+                <img src="static/figs/semVAE_v1.png"
+                    alt="Architecture of the Semantic VAE (SemVAE)"
+                    loading="lazy" style="border-radius:8px;">
+                <figcaption class="has-text-centered" style="font-size:0.9rem; margin-top:0.4rem;">
+                  Architecture of the Semantic VAE (SemVAE).
+                </figcaption>
+              </figure>
+            </div>
+            <div class="column">
+              <figure class="image" style="max-width:100%; text-align:center;">
+                <img src="static/figs/hyb_latent_v1.png"
+                    alt="Composite Latent Construction"
+                    loading="lazy" style="border-radius:8px;">
+                <figcaption class="has-text-centered" style="font-size:0.9rem; margin-top:0.4rem;">
+                  Composite Latent Construction.
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ========== 2. Semantic-First Diffusion ========== -->
+        <h3 class="title is-4" style="margin-top: 2rem;">2. Semantic-First Diffusion</h3>
+
+        <div class="content has-text-justified method-text">
+
+          <p>
+            <strong>Distinct timesteps for semantics and textures:</strong> during training, SFD assigns distinct timesteps to semantics and textures.
+            For each image, we sample a semantic timestep \(t_s\) from an extended interval and derive
+            the texture timestep \(t_z\) by subtracting a fixed offset \(\Delta t\), followed by clamping
+            both to \([0, 1]\) and ensure \( t_s \ge t_z \).
+            This guarantees that the semantic latent is always <em>less noisy</em> than the texture latent,
+            providing clearer structural guidance throughout denoising.
+          </p>
+
+          <!-- ===== Diffusion Transformer Input/Output (Optimized Layout) ===== -->
+        <div class="columns is-vcentered" style="margin-top: 1.5rem; align-items:flex-start;">
+
+          <!-- 左侧文字 + 公式 -->
+          <div class="column is-7">
+            <div class="content has-text-justified method-text">
+              <p>
+                The diffusion model adopts a Transformer backbone \( \mathbf{v}_\theta(\cdot) \)
+                that takes as input the noisy composite latent
+                \([\,\mathbf{s}_{t_s}, \mathbf{z}_{t_z}\,]\) at different noise levels,
+                two separate timesteps \([t_s, t_z]\), and the class label \(y\).
+                It jointly predicts the velocities
+                \([\hat{\mathbf{v}}_s, \hat{\mathbf{v}}_z]\)
+                for semantic and texture components:
+              </p>
+
+              <p style="text-align:center; margin: 0.8rem 0;">
+                $$[\,\hat{\mathbf{v}}_s, \hat{\mathbf{v}}_z\,]
+                = \mathbf{v}_\theta\big([\mathbf{s}_{t_s}, \mathbf{z}_{t_z}],\,[t_s, t_z],\,y\big)$$
+              </p>
+            </div>
+          </div>
+
+          <!-- 右侧图片 -->
+          <div class="column is-5" style="text-align:center;">
+            <figure class="image" style="margin:auto; max-width:420px;">
+              <img src="static/figs/diffusion_train_v1.png"
+                  alt="Input and Output of Diffusion Transformer"
+                  loading="lazy"
+                  style="border-radius:8px; width:100%; height:auto;">
+              <figcaption class="has-text-centered" style="font-size:0.9rem; margin-top:0.5rem;">
+                Input and output of Diffusion Transformer.
+              </figcaption>
+            </figure>
+          </div>
+
+        </div>
+
+
+
+          <!-- Training objective -->
+          <p>
+            The training objective combines velocity prediction losses for both semantic and texture latents:
+          </p>
+
+          <p style="text-align:center;">
+            $$\mathcal{L}_{\mathrm{pred}}
+            = \mathbb{E}_{\mathbf{s}_0, \mathbf{s}_1, \mathbf{z}_0, \mathbf{z}_1, t_s, t_z}
+            \Big[
+            \big\|\hat{\mathbf{v}}_{z} - (\mathbf{z}_1 - \mathbf{z}_0)\big\|^2
+            + \beta \big\|\hat{\mathbf{v}}_{s} - (\mathbf{s}_1 - \mathbf{s}_0)\big\|^2
+            \Big]$$
+          </p>
+
+          <p>
+            Additionally, the representation alignment loss from REPA is employed, which aligns the diffusion hidden states with pretrained vision encoder representations. 
+            The final objective becomes the following:
+          </p>
+
+          <p style="text-align:center;">
+            
+            $$\mathcal{L}_{\text{total}} =
+            \mathcal{L}_{\text{vel}} + \lambda\,\mathcal{L}_{\text{REPA}}$$
+          </p>
+
+
+          <div class="content has-text-justified method-text">
+            <p>
+              <strong>Three-phase Denoising Schedule.</strong>
+              During inference, Semantic-First Diffusion (SFD) performs denoising in three asynchronous phases:
+              <span style="color:#d62728;">Stage I – Semantic initialization</span>
+              (\(t_s \in [0, \Delta t),\; t_z = 0\)),
+              where only semantic latents are denoised to establish global structure;
+              <span style="color:#1f77b4;">Stage II – Asynchronous generation</span>
+              (\(t_s \in [\Delta t, 1],\; t_z \in [0, 1-\Delta t)\)),
+              where semantics and textures are denoised jointly but asynchronously, with semantics advancing slightly ahead to provide clearer guidance;
+              and <span style="color:#2ca02c;">Stage III – Texture completion</span>
+              (\(t_s = 1,\; t_z \in [1-\Delta t, 1]\)),
+              where only textures continue refining fine-grained details to produce the final image.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- ========== Results Section ========== -->
+  <section class="section" id="results">
+    <div class="container">
+      <!-- Section Title -->
+      <h3 class="title is-3 has-text-centered">Results</h3>
+
+      <!-- Results Paragraph -->
+      <div class="content has-text-justified" style="max-width: 900px; margin: 0 auto;">
+        <p>
+          We evaluate Semantic-First Diffusion (SFD) against DiT, LightningDiT, and REPA on ImageNet&nbsp;256×256.
+          Without guidance, SFD achieves consistently lower FID across all model scales while substantially accelerating
+          convergence. For instance, LightningDiT-XL/1 with SFD attains FID 3.53 at only
+          400K iterations, outperforming LightningDiT-XL/1 with REPA at 4M iterations
+          (FID 5.84) and DiT-XL/2 at 7M iterations (FID 9.62), using merely
+          10% and 5.7% of the training cost, respectively. 
+          Notably, SFD achieves comparable performance to DiT-XL trained for 7M iterations and LightningDiT-XL/1 trained for 4M iterations in just 70K and 120K iterations, 
+          achieving <strong>100$\times$</strong> and <strong>33.3$\times$</strong> faster convergence.
+          With guidance, SFD achieves new state-of-the-art performance: <strong>FID&nbsp;1.06</strong> with LightningDiT-XL
+          and <strong>FID&nbsp;1.04</strong> with the 1.0B-parameter LightningDiT-XXL on ImageNet&nbsp;256×256.
+        </p>
+
+        
+          
+ 
+      </div>
+
+      <!-- ===== Table Placeholder (FID comparison) ===== -->
+      <figure class="image" style="margin: 2rem auto; max-width: 900px;">
+        <img src="static/figs/tabel.png" alt="FID Comparison Table" loading="lazy">
+
+      </figure>
+
+      <!-- ===== Demo Images Placeholder ===== -->
+      <figure class="image" style="margin: 2rem auto; max-width: 900px;">
+        <img src="static/figs/demo_Sample.png" alt="Generated Image Samples on ImageNet 256×256" loading="lazy">
+        <figcaption class="has-text-centered" style="font-size:0.9rem; margin-top:0.5rem;">
+          Qualitative samples from our model trained at 256$\times$256 resolution.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+
+  
+  <!-- ===== BibTeX ===== -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <div class="bibtex-header">
+        <h2 class="title">BibTeX</h2>
+        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
+          <i class="fas fa-copy"></i>
+          <span class="copy-text">Copy</span>
+        </button>
+      </div>
+      <pre id="bibtex-code"><code>@article{Pan2025SFD,
+  title={Semantics Lead the Way: Harmonizing Semantic and Texture Modeling with Asynchronous Latent Diffusion},
+  author={Pan, Yueming and Feng, Ruoyu and Dai, Qi and Wang, Yuqi and Lin, Wenfeng and Guo, Mingyu and Luo, Chong and Zheng, Nanning},
+  journal={arXiv preprint arXiv:2504.16064},
+  year={2026}
+}</code></pre>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This page was built using the
+              <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">
+                Academic Project Page Template
+              </a>,
+              adapted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+              Licensed under
+              <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
+                CC BY-SA 4.0
+              </a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  </main>
+</body>
+</html>
